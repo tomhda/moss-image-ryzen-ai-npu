@@ -33,7 +33,9 @@ def ascii_alias(p: Path) -> Path:
         raise SystemExit(f'ASCII alias の置き場が既にあります: {alias}')
     alias.mkdir(parents=True)
     alias.rmdir()
-    r = subprocess.run(['cmd', '/c', 'mklink', '/J', str(alias), str(p)], capture_output=True, text=True)
+    # cmd の出力はコンソールのコードページ (日本語の Windows では cp932) なので oem で読む
+    r = subprocess.run(['cmd', '/c', 'mklink', '/J', str(alias), str(p)], capture_output=True, text=True,
+                       encoding='oem', errors='replace')
     if r.returncode != 0:
         raise SystemExit(f'mklink /J に失敗: {r.stdout} {r.stderr}')
     (alias / '.mossnpu-target').write_text(str(p), encoding='utf-8')

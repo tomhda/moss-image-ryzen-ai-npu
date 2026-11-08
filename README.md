@@ -92,6 +92,7 @@ On the verified machine, with a fresh clone and environments created by `setup.p
 |---|---|---|---|---|---|---|
 | 512², 1 image (`one.json`) | 44.8 s | 153.5 s | 23.7 s (CPU) | 221.9 s | 221.9 s | 0.61 |
 | 512², 2 images (`repro_512.json`) | 44.9 s | 136.0 s | 29.4 s (CPU) | 210.3 s | 105.2 s | 0.60 |
+| 512², 8 images (`text_lengths.json`) | 87.4 s | 234.3 s | 92.3 s (CPU) | 414.0 s | 51.7 s | 0.80 |
 | 1024², 1 image (`one.json`) | 36.4 s | 228.7 s | 11.4 s (NPU) | 276.6 s | 276.6 s | 0.65 |
 | 1024², 6 images (`repro_1024.json`) | 78.0 s | 503.2 s | 15.8 s (NPU) | 597.0 s | 99.5 s | 0.74 |
 
