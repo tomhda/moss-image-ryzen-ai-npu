@@ -1,0 +1,92 @@
+# Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All rights reserved.
+# この設定を元に変えた
+# P2b: MOSS のブロック全体用。moss_part_dd.yaml から、正規化・変調・残差・切り分けを CPU に残すため該当パスを外したもの。
+# 外したパスは TASK_P2B_BLOCK_MUSE.tmp.md の指定どおり（命令列の無い形の SD 部品を作らないため）。
+---
+attributes:
+    domains: com.ryzenai
+    xclbins: "stx_SD_unified_fastpm_2x4x4"
+    op_namespaces: "sd3"
+    model_type: FLUX_TRANSFORMER
+    flux2: flux2
+    op_config: "ops-config.json"
+passes:
+# gemm_gemm_mul_add
+# conv
+    - sd3.pad_conv_ic
+    - sd15.conv_to_sd_conv2d
+# slice_gemm
+    - flux.add_sub_slice_to_slice
+    - sd3.slice_matmul_add_to_sd_slice_gemm
+    - sd_bfp.slice_gemm_bfp
+# ditfusion_tbib_bf
+    - sd3.ditfusion_sib_bf
+    - sd3.ditfusion_tbib_bf
+# gemm_mul_add
+# slice
+# layernorm
+    - sd15.layernorm_to_sd_layernorm
+    - sd_bfp.layernorm_bfp
+# resize
+    - sd15.resize_to_sd_resize
+# gemm
+    - sd15.matmul_add_to_sd_gemm
+# gemm_rn_concat + flash mha
+    - sd3_5.mha_to_sd_mha_with_gemm_rmsnorm_concat_trans
+# gemm_rn_concat + no flash mha
+    - flux.gemm_rn_concat_to_sd_gemm_rn_concat
+    - sd_bfp.gemm_rn_concat_bfp
+# gemm_rn + flash mha
+    - sd3_5.mha_to_sd_mha_with_gemm_rmsnorm_trans
+# gemm_rn + no flash mha
+    - flux.gemm_rn_to_sd_gemm_rn
+    - sd_bfp.gemm_rn_bfp
+# flux mha with rope
+    - flux.mha_to_sd_mha_with_rope_trans
+# gemm_concat + flash mha
+    - sd3.mha_to_sd_mha_with_gemm_concat_trans
+    - sd_bfp.gemm_concat_trans_bfp
+# gemm_trans + flash mha
+    - sd15.mha_to_sd_mha_with_gemm_trans
+    - sd_bfp.gemm_bfp
+# mha
+    - sd15.mha_to_sd_mha
+    - sd_bfp.mha_bfp
+# rope
+    - flux.rope_to_sd_rope
+    - flux.concat_wts_for_sd_rope
+    - sd_bfp.rope_bfp
+# rmsnorm
+# concat
+# mul_add
+# mul
+# add
+# gelu
+    - sd15.gelu_to_sd_gelu
+# matmul
+    - sd15.matmul_to_sd_matmul
+# groupnorm
+    - sd15.groupnorm_to_sd_groupnorm
+    - sd_bfp.groupnorm_bfp
+# cast_mul_avx
+    - sd3_5.cast_mul_to_castmul_avx
+# whitebox_checker
+    - sd3.whitebox_checker
+# weights shuffle
+    - sd3.sdgemm_gemm_mul_add
+    - sd3.sdgemm_mul_add
+    - sd3.sdgemm_concat
+    - sd15.sdgemm
+    - sd15.sdconv
+    - sd15.sdmatmul
+# set preemption and fastpm attr for sd nodes
+    - sd15.set_preemption_fastpm_attr_for_sd_nodes
+# below are the passes to simplify the graph
+    - remove_reshapes
+    - remove_parallel_casts
+    - simplify_casts
+    - remove_dangling_nodes
+    - remove_unused_io
+# DD の段
+    - dd.optimize_toposort
+    - dd.dynamic_sd_nodes_to_dd

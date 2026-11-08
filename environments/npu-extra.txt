@@ -1,0 +1,5 @@
+# NPU env: created from Ryzen AI env.yaml + AMD wheels by setup.ps1, then these pinned additions.
+# Versions match the verified environment (pip list at verification time).
+numpy==1.26.4
+psutil==7.2.2
+safetensors==0.8.0

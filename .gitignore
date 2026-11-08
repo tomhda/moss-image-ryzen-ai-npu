@@ -1,0 +1,8 @@
+configs/local.json
+parts/
+models/
+outputs/
+*.png
+__pycache__/
+.run/
+.gen.lock

@@ -1,0 +1,16 @@
+{
+  "npu_python": "C:/path/to/envs/mossnpu-npu/python.exe",
+  "text_python": "C:/path/to/envs/mossnpu-text/python.exe",
+  "ryzen_ai_path": "C:/Program Files/RyzenAI/1.8.0",
+  "genai_sd_path": "C:/Program Files/RyzenAI/1.8.0/GenAI-SD",
+  "dd_root": "C:/Program Files/RyzenAI/1.8.0/GenAI-SD/lib",
+  "dd_plugins_root": "C:/Program Files/RyzenAI/1.8.0/GenAI-SD/lib/transaction/stx",
+  "moss_path": "C:/path/to/models/MOSS-Image-SFT",
+  "klein_vae_dd_path": "C:/path/to/models/klein/vae_decoder/dynamic/dd",
+  "parts_path": "../parts",
+  "moss_revision": "f972bd4b4b9e3852133cc5da954d87bc32cd8fb9",
+  "lora_revision": "2ded95c37a029360245926fe72e475e30039bbfb",
+  "klein_revision": "45aeffe92ecf5ce0169c511c232c2f100be3cbe1",
+  "hf_repo": "Tomoali/MOSS-Image-SFT-4-steps-ryzen-ai-npu",
+  "hf_revision": "REPLACE_WITH_HF_COMMIT"
+}

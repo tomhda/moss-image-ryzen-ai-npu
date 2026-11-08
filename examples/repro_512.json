@@ -1,0 +1,12 @@
+[
+ {
+  "id": "cafe-board",
+  "prompt": "A chalkboard menu standing outside a small cafe that reads 'COFFEE 450円' in white chalk, morning light, realistic photo.",
+  "seed": 42
+ },
+ {
+  "id": "neon-open",
+  "prompt": "A bright red neon sign glowing on a dark old brick wall that reads 'OPEN 24H', wet quiet street reflections at night, realistic photo.",
+  "seed": 7
+ }
+]

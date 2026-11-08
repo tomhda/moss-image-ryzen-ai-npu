@@ -1,0 +1,32 @@
+[
+ {
+  "id": "cafe-board",
+  "prompt": "A chalkboard menu standing outside a small cafe that reads 'COFFEE 450円' in white chalk, morning light, realistic photo.",
+  "seed": 1234
+ },
+ {
+  "id": "short-mug",
+  "prompt": "A white coffee mug with the word 'HI' printed on it.",
+  "seed": 7
+ },
+ {
+  "id": "mid-station",
+  "prompt": "A vintage train station platform with a large departure board showing '東京 12:30', travelers with suitcases, morning sunlight through the glass roof, steam rising from a small coffee stand, film photo style with warm tones and gentle grain, with polished wooden benches, hanging clocks, and soft dust floating in the warm shafts of light.",
+  "seed": 7
+ },
+ {
+  "id": "long-market",
+  "prompt": "A bustling night market street in a coastal town, lined with food stalls under strings of warm yellow lanterns. A large wooden banner hanging across the street reads 'NIGHT MARKET 2026' in bold white letters. Vendors grill skewers and fry dumplings, sending steam and smoke into the air. Families and couples walk between the stalls holding paper cups. In the background, fishing boats rest in the harbor and a lighthouse glows on the hill. Wet cobblestones reflect the colorful lights after a recent rain. Realistic photo, wide angle, rich colors, cinematic lighting.",
+  "seed": 7
+ },
+ {
+  "id": "max-magazine",
+  "prompt": "A glossy magazine cover with the large masthead 'TRAVEL' at the top and the headline 'ISLAND ESCAPES' in bold yellow letters near the bottom. The cover photo shows a turquoise lagoon surrounded by white sand and tall palm trees, with a small wooden pier leading to an overwater bungalow. A sailboat drifts in the distance under a clear blue sky with a few soft clouds. Smaller cover lines on the left side read 'TOP 10 BEACHES' and 'PACKING GUIDE'. A barcode sits in the lower right corner. Clean layout, professional print design, vivid saturated colors, high detail, crisp typography. The photograph has bright tropical sunlight, clear reflections on the calm water, and lush green hills behind the beach. The layout uses clean white margins, modern sans-serif type, and a bright summery feeling throughout the whole cover design.",
+  "seed": 7
+ },
+ {
+  "id": "long-hd",
+  "prompt": "A glossy magazine cover with the large masthead 'TRAVEL' at the top and the headline 'ISLAND ESCAPES' in bold yellow letters near the bottom. The cover photo shows a turquoise lagoon surrounded by white sand and tall palm trees, with a small wooden pier leading to an overwater bungalow. A sailboat drifts in the distance under a clear blue sky with a few soft clouds. Smaller cover lines on the left side read 'TOP 10 BEACHES' and 'PACKING GUIDE'. A barcode sits in the lower right corner. Clean layout, professional print design, vivid saturated colors, high detail, crisp typography. The photograph has bright tropical sunlight, clear reflections on the calm water, and lush green hills behind the beach. The layout uses clean white margins, modern sans-serif type, and a bright summery feeling throughout the whole cover design. The cover is shown on a bright seaside newsstand in the early morning, with soft sunlight falling across the display and gentle shadows stretching over the wooden counter. A calm summer mood fills the whole scene from edge to edge, and every color looks warm, clear, and inviting.",
+  "seed": 7
+ }
+]
