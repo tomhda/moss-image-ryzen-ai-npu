@@ -13,7 +13,9 @@ def main():
     ap.add_argument('--ryzen', required=True)
     a = ap.parse_args()
     import onnxruntime as ort
-    part = Path(a.part_dir)
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src'))
+    import npu_config as cfg
+    part = cfg.ascii_alias(Path(a.part_dir))
     dd_dir = part / 'dd'
     custom_op = Path(a.ryzen) / 'deployment' / 'onnxruntime_providers_ryzenai.dll'
     os.add_dll_directory(str(custom_op.parent))
