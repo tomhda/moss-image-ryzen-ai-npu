@@ -3,8 +3,6 @@ from __future__ import annotations
 import argparse, json, sys
 import numpy as np
 import layer_var as lv
-import layer_hd as lh
-import prepost as rn
 
 def probe(size: int):
     if size == 512:
@@ -21,6 +19,7 @@ def probe(size: int):
         out = st.run(['out'], ft)[0]
         return {'att_shape': list(att.shape), 'att_finite': bool(np.isfinite(att).all()),
                 't_shape': list(out.shape), 't_finite': bool(np.isfinite(out).all())}
+    import layer_hd as lh
     sa = lh.dd_session_a1024('attn1024_L0', 2)
     st = lv.dd_session_var('tile_nc_L0', 2)
     consts = lh.consts_for(np.zeros((4097, 64), np.float32), np.ones((4097, 64), np.float32), 1)
@@ -40,13 +39,22 @@ def main():
     ap.add_argument('--size', type=int, choices=[512, 1024], default=512)
     a = ap.parse_args()
     import onnxruntime as ort
+    providers = ort.get_available_providers()
+    ep_devices = [str(d) for d in ort.get_ep_devices()]
     r = probe(a.size)
     r['size'] = a.size
-    r['providers'] = ort.get_available_providers()
-    r['ep_devices'] = [str(d) for d in ort.get_ep_devices()]
-    print(json.dumps(r, indent=1))
-    if not (r['att_finite'] and r['t_finite']):
-        raise SystemExit(1)
+    r['providers'] = providers
+    r['ep_devices'] = ep_devices
+    ok = bool(r['att_finite'] and r['t_finite'])
+    r['ok'] = ok
+    text = json.dumps(r, indent=1)
+    print(text, flush=True)
+    # DD セッションの終了処理で落ちることがあるため、結果を書いてから OS 終了する
+    from pathlib import Path
+    Path('doctor_probe_result.json').write_text(text, encoding='utf-8')
+    sys.stdout.flush()
+    import os as _os
+    _os._exit(0 if ok else 1)
 
 if __name__ == '__main__':
     main()

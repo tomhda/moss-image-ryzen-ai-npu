@@ -25,13 +25,13 @@ foreach ($k in @('npu_python', 'text_python', 'ryzen_ai_path', 'genai_sd_path', 
 Write-Host '== Python packages =='
 foreach ($pair in @(@('npu', (Resolve-Cfg $cfg.npu_python)), @('text', (Resolve-Cfg $cfg.text_python)))) {
     Write-Host "-- $($pair[0]) $($pair[1])"
-    & $pair[1] -c "import sys, importlib.metadata as m; print(sys.version); [print(f'{d}=={m.version(d)}') for d in ('torch','numpy','onnxruntime-vitisai','transformers','diffusers','safetensors') if True]" 2>&1 |
-        ForEach-Object { Write-Host "  $_" }
+    & $pair[1] (Join-Path $root 'validation\list_packages.py') 2>&1 | ForEach-Object { Write-Host "  $_" }
 }
 Write-Host '== Parts manifest check =='
 $parts = Resolve-Cfg $cfg.parts_path
 $textPy = Resolve-Cfg $cfg.text_python
-& $textPy -c "import json,hashlib,sys; from pathlib import Path; root=Path(sys.argv[1]); m=json.loads((root/'manifest.json').read_text()); bad=[e['path'] for e in m['files'] if not (root/e['path']).exists() or (root/e['path']).stat().st_size!=e['size']]; print(f\"files={len(m['files'])} missing_or_size_mismatch={bad[:10]}\"); print('github_commit', m.get('github_commit'))" $parts 2>&1 | ForEach-Object { Write-Host $_ }
+& $textPy (Join-Path $root 'validation\check_manifest.py') $parts 2>&1 | ForEach-Object { Write-Host $_ }
+Write-Host "manifest check exit $LASTEXITCODE"
 Write-Host "== NPU probe size $Size =="
 $npuPy = Resolve-Cfg $cfg.npu_python
 $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -45,6 +45,9 @@ $psi.Environment['MOSSNP_PARTS'] = $parts
 $psi.Environment['MOSSNP_RYZEN'] = Resolve-Cfg $cfg.ryzen_ai_path
 $psi.Environment['MOSSNP_GENAI_SD'] = Resolve-Cfg $cfg.genai_sd_path
 $psi.Environment['MOSSNP_KLEIN_VAE_DD'] = Resolve-Cfg $cfg.klein_vae_dd_path
+$psi.Environment['RYZEN_AI_INSTALLATION_PATH'] = Resolve-Cfg $cfg.ryzen_ai_path
+$psi.Environment['DD_ROOT'] = Resolve-Cfg $cfg.dd_root
+$psi.Environment['DD_PLUGINS_ROOT'] = Resolve-Cfg $cfg.dd_plugins_root
 $proc = [System.Diagnostics.Process]::Start($psi); $proc.WaitForExit()
 Write-Host "probe exit $($proc.ExitCode)"
 Write-Host "FreeMB now $([math]::Round((Get-Counter '\Memory\Available MBytes').CounterSamples.CookedValue)) (1024 needs largest group 14 pairs; see gen memory check)"

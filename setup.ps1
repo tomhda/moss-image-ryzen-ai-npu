@@ -30,27 +30,25 @@ if (Ensure-CondaEnv $NpuEnv) {
     (Get-Content (Join-Path $RyzenPath 'env.yaml') -Raw) -replace 'name:\s*\S+', "name: $NpuEnv" | Set-Content -Encoding utf8 $tmpYaml
     & $conda env create -f $tmpYaml
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    $npuPy = Env-Python $NpuEnv
-    $wheels = @('ryzenai_onnx_utils-1.8.0-py3-none-win_amd64.whl', 'ryzenai_dynamic_dispatch-1.8.0-py3-none-win_amd64.whl',
-                'onnxruntime_providers_ryzenai-1.8.0-py3-none-win_amd64.whl', 'onnxruntime_vitisai-1.27.0-py3-none-win_amd64.whl') |
-        ForEach-Object { Join-Path $RyzenPath $_ }
-    & $npuPy -m pip install @wheels
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $npuPy -m pip install -r (Join-Path $root 'environments\npu-extra.txt')
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
+$npuPy0 = Env-Python $NpuEnv
+$wheels = Get-ChildItem (Join-Path $RyzenPath '*.whl') | ForEach-Object { $_.FullName }
+& $npuPy0 -m pip install @wheels
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $npuPy0 -m pip install -r (Join-Path $root 'environments\npu-extra.txt')
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 # --- Text env ---
 if (Ensure-CondaEnv $TextEnv) {
     Write-Host "Text env exists: $TextEnv"
 } else {
     & $conda create -n $TextEnv -y python=3.12.16 pip
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    $textPy = Env-Python $TextEnv
-    & $textPy -m pip install 'torch==2.15.0' --index-url https://download.pytorch.org/whl/cpu
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $textPy -m pip install -r (Join-Path $root 'environments\text.txt')
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
+$textPy0 = Env-Python $TextEnv
+& $textPy0 -m pip install 'torch==2.15.0' --index-url https://download.pytorch.org/whl/cpu
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $textPy0 -m pip install -r (Join-Path $root 'environments\text.txt')
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $npuPy = Env-Python $NpuEnv; $textPy = Env-Python $TextEnv
 $partsDir = Join-Path $root 'parts'
 New-Item -ItemType Directory -Force -Path $partsDir | Out-Null
