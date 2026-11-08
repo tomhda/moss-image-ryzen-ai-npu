@@ -1,5 +1,5 @@
 """DD 部品の初回コンパイル (NPU env, compile_fusion_rt=1 で 1 回実行し fconst を作る)。
-入力は形の合った 0 で作る。P1 の参照ファイルは読まない。"""
+入力は形の合った 0 で作る。参照の出力ファイルは読まない。"""
 from __future__ import annotations
 import argparse, ctypes, os, sys, time
 from pathlib import Path

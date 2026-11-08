@@ -1,0 +1,42 @@
+[
+ {
+  "id": "short-mug",
+  "prompt": "A white coffee mug with the word 'HI' printed on it.",
+  "seed": 7
+ },
+ {
+  "id": "short-stop",
+  "prompt": "A red stop sign that reads 'STOP'.",
+  "seed": 7
+ },
+ {
+  "id": "mid-books",
+  "prompt": "A cozy bookstore window at dusk with a hand-painted sign that reads 'BOOKS & TEA', warm lights inside, stacks of old books on wooden shelves, a sleeping cat on the windowsill, light rain on the glass, realistic photo with soft reflections and shallow depth of field, with a handwritten chalkboard leaning by the door and soft amber light spilling onto the wet pavement outside.",
+  "seed": 7
+ },
+ {
+  "id": "mid-station",
+  "prompt": "A vintage train station platform with a large departure board showing '東京 12:30', travelers with suitcases, morning sunlight through the glass roof, steam rising from a small coffee stand, film photo style with warm tones and gentle grain, with polished wooden benches, hanging clocks, and soft dust floating in the warm shafts of light.",
+  "seed": 7
+ },
+ {
+  "id": "long-market",
+  "prompt": "A bustling night market street in a coastal town, lined with food stalls under strings of warm yellow lanterns. A large wooden banner hanging across the street reads 'NIGHT MARKET 2026' in bold white letters. Vendors grill skewers and fry dumplings, sending steam and smoke into the air. Families and couples walk between the stalls holding paper cups. In the background, fishing boats rest in the harbor and a lighthouse glows on the hill. Wet cobblestones reflect the colorful lights after a recent rain. Realistic photo, wide angle, rich colors, cinematic lighting.",
+  "seed": 7
+ },
+ {
+  "id": "long-desk",
+  "prompt": "A tidy home office desk by a large window on a bright spring morning. On the desk are a laptop showing a calendar, a ceramic pot with a small cactus, an open notebook, and a cup of green tea. A yellow sticky note on the monitor says '会議 10:00' in black marker. Cherry blossoms are visible outside the window, and soft sunlight falls across the wooden desk. Minimalist interior, calm atmosphere, realistic photo, natural colors, sharp focus on the sticky note. A small radio, reading glasses, and a stack of letters sit near the window, and sheer curtains move gently in the breeze.",
+  "seed": 7
+ },
+ {
+  "id": "max-magazine",
+  "prompt": "A glossy magazine cover with the large masthead 'TRAVEL' at the top and the headline 'ISLAND ESCAPES' in bold yellow letters near the bottom. The cover photo shows a turquoise lagoon surrounded by white sand and tall palm trees, with a small wooden pier leading to an overwater bungalow. A sailboat drifts in the distance under a clear blue sky with a few soft clouds. Smaller cover lines on the left side read 'TOP 10 BEACHES' and 'PACKING GUIDE'. A barcode sits in the lower right corner. Clean layout, professional print design, vivid saturated colors, high detail, crisp typography. The photograph has bright tropical sunlight, clear reflections on the calm water, and lush green hills behind the beach. The layout uses clean white margins, modern sans-serif type, and a bright summery feeling throughout the whole cover design.",
+  "seed": 7
+ },
+ {
+  "id": "max-map",
+  "prompt": "A detailed fantasy map drawn on aged parchment, showing a large island with mountains, rivers, forests and small villages. The title at the top reads 'ISLE OF MIST' in elegant dark ink letters. A compass rose decorates the lower left corner, and a sea serpent swims in the ocean to the east. Tiny ships sail along dotted trade routes between ports. The edges of the parchment are slightly burned and torn. Hand-drawn style, fine pen lines, muted brown and green colors, top-down view, highly detailed illustration. Small illustrations show a lighthouse on the southern shore, a waterfall in the northern mountains, and a hidden cave near the western cliffs. Decorative borders with waves and stars frame the map, and tiny labels name every bay, forest, and mountain pass in careful hand lettering.",
+  "seed": 7
+ }
+]

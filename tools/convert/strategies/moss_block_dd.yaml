@@ -1,7 +1,12 @@
 # Copyright (C) 2024 - 2026 Advanced Micro Devices, Inc. All rights reserved.
-# この設定を元に変えた
-# P2b: MOSS のブロック全体用。moss_part_dd.yaml から、正規化・変調・残差・切り分けを CPU に残すため該当パスを外したもの。
-# 外したパスは TASK_P2B_BLOCK_MUSE.tmp.md の指定どおり（命令列の無い形の SD 部品を作らないため）。
+#
+# Modified from the partition strategies of ryzenai_onnx_utils 1.8.0 (Ryzen AI Software 1.8.0,
+# data/partition_strategies): the attributes come from flux2_transformer_bfp.yaml and the pass
+# list from sd3_mmdit_no_dd_bfp.yaml. Changes: the passes are written out instead of inherited;
+# sd15.sigmoid_mul_to_sd_silu and sd_bfp.silu_bfp are removed; dd.optimize_toposort and
+# dd.dynamic_sd_nodes_to_dd are added; the passes that would move normalization, modulation,
+# residual adds and slicing to the NPU are removed, so those stay on the CPU.
+# Used for the attention parts.
 ---
 attributes:
     domains: com.ryzenai

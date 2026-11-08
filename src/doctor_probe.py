@@ -5,34 +5,24 @@ import numpy as np
 import layer_var as lv
 
 def probe(size: int):
-    if size == 512:
-        sa = lv.dd_session_var('attn_L0', 2)
-        st = lv.dd_session_var('tile_nc_L0', 2)
-        consts = lv.consts_for(np.zeros((1025, 64), np.float32), np.ones((1025, 64), np.float32), 1)
-        x = np.zeros((1, 1216, 3072), np.float32)
-        mod = np.zeros((1, 1, 3072), np.float32)
-        feeds = {'x': x, 'shift_a': mod, 'scale_a': mod, **consts}
-        feeds = {k: v for k, v in feeds.items() if k in {i.name for i in sa.get_inputs()}}
-        att = sa.run(['att'], feeds)[0]
-        ft = {'x': np.zeros((1, 256, 3072), np.float32), 'att': np.zeros((1, 256, 3072), np.float32),
-              'gate_a': mod, 'shift_f': mod, 'scale_f': mod, 'gate_f': mod}
-        out = st.run(['out'], ft)[0]
-        return {'att_shape': list(att.shape), 'att_finite': bool(np.isfinite(att).all()),
-                't_shape': list(out.shape), 't_finite': bool(np.isfinite(out).all())}
+    """生成の worker と同じ作り方・回し方で、層 0（A と T）を小さな固定入力で 1 回通す。"""
+    import stage_dit as sd
+    import prepost as rn
     import layer_hd as lh
-    sa = lh.dd_session_a1024('attn1024_L0', 2)
-    st = lv.dd_session_var('tile_nc_L0', 2)
-    consts = lh.consts_for(np.zeros((4097, 64), np.float32), np.ones((4097, 64), np.float32), 1)
-    x = np.zeros((1, 4352, 3072), np.float32)
-    mod = np.zeros((1, 1, 3072), np.float32)
-    feeds = {'x': x, 'shift_a': mod, 'scale_a': mod, **consts}
-    feeds = {k: v for k, v in feeds.items() if k in {i.name for i in sa.get_inputs()}}
-    att = sa.run(['att'], feeds)[0]
-    ft = {'x': np.zeros((1, 256, 3072), np.float32), 'att': np.zeros((1, 256, 3072), np.float32),
-          'gate_a': mod, 'shift_f': mod, 'scale_f': mod, 'gate_f': mod}
-    out = st.run(['out'], ft)[0]
-    return {'att_shape': list(att.shape), 'att_finite': bool(np.isfinite(att).all()),
-            't_shape': list(out.shape), 't_finite': bool(np.isfinite(out).all())}
+    lay = lv if size == 512 else lh
+    run_layer = lv.run_layer_var if size == 512 else lh.run_layer_hd
+    opts = argparse.Namespace(intra=2, no_spin=False, no_arena=False, size=size)
+    sessions, _, create_s, fail = sd.create_sessions_p5([0], opts)
+    if sessions is None:
+        return {'finite': False, 'error': f'session create stopped at layer {fail} (low memory)'}
+    text_len = 8
+    rows = lay.IMG + text_len
+    cur = (np.random.default_rng(0).standard_normal((1, rows, 3072)) * 0.1).astype(np.float32)
+    mods = {nm: np.zeros((1, 1, 3072), np.float32) for nm in rn.BLOCK_MODS}
+    consts = lay.consts_for(np.zeros((rows, 64), np.float32), np.ones((rows, 64), np.float32), text_len)
+    out, _, _ = run_layer(sessions, 0, cur, mods, consts)
+    return {'layer': 0, 'rows': rows, 'out_shape': list(out.shape), 'finite': bool(np.isfinite(out).all()),
+            'create_s': round(create_s, 2)}
 
 def main():
     ap = argparse.ArgumentParser()
@@ -40,18 +30,14 @@ def main():
     a = ap.parse_args()
     import onnxruntime as ort
     providers = ort.get_available_providers()
-    ep_devices = [str(d) for d in ort.get_ep_devices()]
     r = probe(a.size)
     r['size'] = a.size
     r['providers'] = providers
-    r['ep_devices'] = ep_devices
-    ok = bool(r['att_finite'] and r['t_finite'])
+    ok = bool(r['finite'])
     r['ok'] = ok
     text = json.dumps(r, indent=1)
     print(text, flush=True)
-    # DD セッションの終了処理で落ちることがあるため、結果を書いてから OS 終了する
-    from pathlib import Path
-    Path('doctor_probe_result.json').write_text(text, encoding='utf-8')
+    # DD セッションの終了処理で落ちることがあるため、結果を出してから OS 終了する
     sys.stdout.flush()
     import os as _os
     _os._exit(0 if ok else 1)
