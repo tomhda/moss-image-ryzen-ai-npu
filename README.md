@@ -1,8 +1,8 @@
 # MOSS-Image-SFT 4-step on the AMD Ryzen AI NPU
 
-Text-to-image with [MOSS-Image-SFT](https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT) and the 4-step LoRA [akhaliq/MOSS-Image-SFT-4-steps](https://huggingface.co/akhaliq/MOSS-Image-SFT-4-steps), with the diffusion transformer running on the NPU of an AMD Ryzen AI 300-series processor (XDNA 2). 512×512 and 1024×1024. The integrated GPU is not used. Unofficial; see [NOTICE.md](NOTICE.md).
+AMD Ryzen AI NPU (XDNA 2) port of the [MOSS-Image-SFT](https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT) 4-step text-to-image model ([akhaliq/MOSS-Image-SFT-4-steps](https://huggingface.co/akhaliq/MOSS-Image-SFT-4-steps) LoRA merged). Supported image sizes: 512×512 and 1024×1024. Unofficial; see [NOTICE.md](NOTICE.md).
 
-The NPU parts are on Hugging Face: [Tomoali/MOSS-Image-SFT-4-steps-ryzen-ai-npu](https://huggingface.co/Tomoali/MOSS-Image-SFT-4-steps-ryzen-ai-npu). `setup.ps1` downloads them.
+This repository holds the setup, generation and conversion scripts. The NPU model files are on Hugging Face ([Tomoali/MOSS-Image-SFT-4-steps-ryzen-ai-npu](https://huggingface.co/Tomoali/MOSS-Image-SFT-4-steps-ryzen-ai-npu)) and are downloaded by `setup.ps1`.
 
 ![Four images generated with this repository](docs/images/samples.jpg)
 
