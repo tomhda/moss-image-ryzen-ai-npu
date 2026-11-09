@@ -49,10 +49,13 @@ def main():
         raise SystemExit(f'worker create failed at {fail}')
     print(f'worker size {a.size} layers {layers[0]}-{layers[-1]} created {ss:.2f}s', flush=True)
     out_data = {}
+    items_s = []
     for i in range(n):
+        t_i = time.perf_counter()
         cur = curs[i]
         for l in layers:
             cur, _, _ = run_layer(sessions, l, cur, mods[i], consts_by_i[i])
+        items_s.append(time.perf_counter() - t_i)
         if cur.dtype != np.float32 or not bool(np.isfinite(cur).all()):
             raise SystemExit(f'worker 出力が有限でない item {i}')
         out_data[f'cur{i}'] = cur
@@ -62,7 +65,7 @@ def main():
     cpu = cpu_seconds() - c_start; wall = time.perf_counter() - t_start
     sha = hashlib.sha256(Path(a.out).read_bytes()).hexdigest()
     done = {'run_id': a.run_id, 'out': str(a.out), 'sha256': sha, 'cpu_s': round(cpu, 2), 'wall_s': round(wall, 2),
-            'layers': a.layers, 'size': a.size}
+            'layers': a.layers, 'size': a.size, 'create_s': round(ss, 2), 'items_s': [round(t, 3) for t in items_s]}
     tmp_done = Path(str(a.out) + '.done.json.tmp')
     tmp_done.write_text(json.dumps(done), encoding='utf-8')
     os.replace(tmp_done, str(a.out) + '.done.json')

@@ -208,12 +208,14 @@ def main():
                         t_w = time.perf_counter()
                         rc = subprocess.run(cmd).returncode
                         w_wall = time.perf_counter() - t_w
-                        w_cpu = 0.0
+                        w_cpu = 0.0; w_create = None; w_items = []
                         if done.exists():
                             try:
                                 dj = json.loads(done.read_text(encoding='utf-8'))
                                 if dj.get('run_id') == a.run_id:
                                     w_cpu = float(dj.get('cpu_s', 0.0))
+                                    w_create = dj.get('create_s')
+                                    w_items = [float(t) for t in dj.get('items_s', [])]
                                     if hashlib.sha256(wout.read_bytes()).hexdigest() != dj.get('sha256'):
                                         rc = -1
                                         print('worker output hash mismatch', flush=True)
@@ -222,7 +224,11 @@ def main():
                                 rc = -1
                         worker_cpu_total += w_cpu
                         log['worker_runs'].append({'step': step_idx, 'layers': f'{grp[0]}-{grp[-1]}',
-                                                   'exit_code': rc, 'wall_s': round(w_wall, 2), 'cpu_s': round(w_cpu, 2)})
+                                                   'exit_code': rc, 'wall_s': round(w_wall, 2), 'cpu_s': round(w_cpu, 2),
+                                                   'create_s': w_create, 'items_s': w_items})
+                        for i, e in enumerate(entries):
+                            if i < len(w_items):
+                                states[f"{e['id']}_s{e['seed']}"]['wall'] += w_items[i]
                         print(f'worker step {step_idx} layers {grp[0]}-{grp[-1]} exit {rc} out_exists {wout.exists()}', flush=True)
                         if rc != 0 or not wout.exists():
                             raise RuntimeError(f'worker failed step {step_idx} layers {grp[0]}-{grp[-1]} exit {rc}')

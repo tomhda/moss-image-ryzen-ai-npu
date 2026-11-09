@@ -82,23 +82,32 @@ The image is written to `<Out>\<id>_s<seed>.png`. The same folder gets the final
 
 Exit codes: `0` all images done, `3` some prompts were longer than the limit and skipped (`SKIP id=... tokens=...`; the others are done), `2` bad input or the output folder is in use by another run, anything else a failure. A run never reuses images from an earlier run in the same folder.
 
-Put several prompts in one items file: loading the text encoder and creating the NPU sessions happen once per run, so the time per image drops as the list grows.
+Put several prompts in one items file: loading the text encoder and creating the NPU sessions take the same time whatever the number of images, so they are paid once per run.
+
+`text_log.json`, `dit_log.json` and `vae_log.json` in the output folder record each stage's loading time and the time of each image.
 
 ## Measured
 
-On the verified machine, with a fresh clone and environments created by `setup.ps1`, default options. Times include loading the models and creating the NPU sessions. CPU time is user + system time of all processes of the run.
+On the verified machine, default options. A run of N images takes about loading + N × per image:
 
-| Run | Text | Transformer | Decoder | Total | Per image | CPU time / wall time |
-|---|---|---|---|---|---|---|
-| 512², 1 image (`one.json`) | 44.8 s | 153.5 s | 23.7 s (CPU) | 221.9 s | 221.9 s | 0.61 |
-| 512², 2 images (`repro_512.json`) | 44.9 s | 136.0 s | 29.4 s (CPU) | 210.3 s | 105.2 s | 0.60 |
-| 512², 8 images (`text_lengths.json`) | 87.4 s | 234.3 s | 92.3 s (CPU) | 414.0 s | 51.7 s | 0.80 |
-| 1024², 1 image (`one.json`) | 36.4 s | 228.7 s | 11.4 s (NPU) | 276.6 s | 276.6 s | 0.65 |
-| 1024², 6 images (`repro_1024.json`) | 78.0 s | 503.2 s | 15.8 s (NPU) | 597.0 s | 99.5 s | 0.74 |
+| Size | Loading, once per run | Per image | 1 image | 5 images |
+|---|---|---|---|---|
+| 512×512 | 117 s | 32 s | 149 s | 278 s |
+| 1024×1024 | 143 s | 65 s | 208 s | 470 s |
 
-- CPU time / wall time is the average number of busy logical processors, out of 16.
+- Measured as 1 image, 5 images and 1 image again, one run after another, for each size. Per image is the 5-image run minus the second 1-image run, divided by 4. Loading is the second 1-image run minus one image. Prompts of 24–41 tokens.
+- Per image by stage, from the 5-image runs: text encoder 2.2–3.1 s; transformer 16.0–16.9 s at 512², 55.2–56.8 s at 1024² (images 2–5); decoder 10.5–10.6 s on the CPU at 512², 0.86–0.87 s on the NPU at 1024². The rest is writing and reading the transformer's inputs and outputs between its processes.
+- Loading covers:
+  - the text encoder weights: in every run, one prompt took 29.0–31.7 s to encode instead of 2.2–3.1 s;
+  - the NPU sessions of the transformer, created again at each of the 4 steps: 44–57 s in total per run;
+  - the first image through the transformer, which takes 3 s more than the others at 512² and 10 s more at 1024²;
+  - the NPU decoder at 1024²: 8–10 s.
+- Free physical memory was 12.6–15.2 GB before each run, so the transformer ran as two processes of 21 blocks at 512² and three of 14 at 1024².
+- The first 512² run, started after the files had not been used for some time, took 190 s instead of 149 s.
+- Longer prompts take longer to encode: 10.7 s at 190 tokens and 13.7 s at 245 tokens in a separate 1024² run.
+- CPU time / wall time (user + system time of all processes, divided by the wall time; the average number of busy logical processors, out of 16): 0.48–0.59 for 1 image, 0.71–0.73 for 5 images.
 - Integrated GPU: 0% on every engine for the processes of a 1024² run, read once per second from the Windows `GPU Engine` counters per process. The NPU appears in the same counters as a separate adapter with only a Compute engine.
-- Lowest free physical memory during the 1-image runs, sampled every 5 seconds: 2.7 GB at 512², 3.9 GB at 1024².
+- Lowest free physical memory in separate 1-image runs, sampled every 5 seconds: 2.7 GB at 512², 3.9 GB at 1024².
 - The transformer stage loads the 42 blocks as NPU sessions, about 0.35 GB each at 512² and 0.75 GB at 1024². At 512² it holds all 42 in one process when 15 GB is free and otherwise splits them into two processes of 21; at 1024² it always uses three processes of 14, one after another. Before creating the sessions it checks free memory and stops with a message if it is too low.
 - Runs with the same inputs give bit-identical latents and PNGs.
 
